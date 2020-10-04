@@ -29,7 +29,7 @@ then
   echo "Your User name?"
   read USER_NAME 
 	# creating config.json
-	sudo -u USER_NAME touch config.json
+	sudo -u $USER_NAME touch config.json
 	# if empty, write the root object
 	if [[ $(cat config.json) == '' ]];
 	then
