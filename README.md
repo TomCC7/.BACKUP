@@ -7,6 +7,7 @@ Some shell scripts helps you backing up your files
 
 ```bash
 # fork one copy to your directory
+# **you may want to change the visibility...**
 git clone https://github.com/{Your name}/.backup
 cd .backup # make sure you are at this directory
 # add the files you want to backup in lists.
@@ -39,3 +40,6 @@ cd .backup # make sure you are at this directory
 - Add init.sh, recover.sh
 - list.txt now supports using `~` as home directory
 
+### Apr 3 2021
+- Now supports adding directory to sync
+- Don't need to give user name now

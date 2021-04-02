@@ -3,10 +3,24 @@ function json_append {
 	cat <<< $(jq "$1" "$2") > "$2"
 }
 
+function sync_dir() {
+  LS=/usr/bin/ls
+  mkdir -p $DIR/backup$1
+  for FILE in $($LS $1);
+  do
+    FILE=$1/$FILE # absolute path
+    if [ -d $FILE ]; then
+      sync_dir $FILE
+    else
+      ln -f $FILE $DIR/backup$FILE
+    fi
+  done
+}
+
 # getting sudo privelege
 if [[ "$UID" -ne 0 ]]; then
 	echo "Asking for sudo privelege..."
-	exec sudo "$0" "$@"
+	exec sudo -E "$0" "$@"
 	exit 0
 fi
 
@@ -25,24 +39,17 @@ fi
 
 if ! [[ -f config.json ]] || [[ $(jq .user config.json) == 'null' ]];
 then
-  # asking for user name
-  echo "Your User name?"
-  read USER_NAME 
 	# creating config.json
-	sudo -u $USER_NAME touch config.json
+	sudo -u $USER touch config.json
 	# if empty, write the root object
 	if [[ $(cat config.json) == '' ]];
 	then
 		echo "{}" > config.json
 		json_append ".back_dir=\"$BACK_DIR\"" config.json
-	fi	
-
-	json_append ".user=\"$USER_NAME\"" config.json
-else
-  USER_NAME=$(jq .user config.json|tr -d '"')
+	fi
+	json_append ".user=\"$USER\"" config.json
 fi
-	
-HOME=/home/$USER_NAME
+
 # finding files...
 FILE_NUM=$(cat $DIR/list.txt|wc -l)
 echo "Found $FILE_NUM files in list!"
@@ -51,8 +58,16 @@ mkdir -p $BACK_DIR # making backup directory
 
 for FILE in $(cat $DIR/list.txt);
 do
-	echo "linking $FILE..."
-	FILE=$(echo $FILE | sed "s?~?$HOME?")
-	mkdir -p $DIR/$BACK_DIR$( dirname $FILE)
-	ln $FILE $DIR/backup$FILE
+  FILE=$(echo $FILE | sed "s?~?$HOME?")
+  if [ -d $FILE ]; then
+    # echo "Directory currently not supported!"
+    sync_dir $FILE
+  elif [ -f $FILE ]; then
+    mkdir -p $DIR/$BACK_DIR$( dirname $FILE)
+    ln -f $FILE $DIR/backup$FILE
+  else
+    echo "Error: Path $FILE does not exist on your computer!"
+    continue
+  fi
+  echo "$FILE linked"
 done

@@ -1,0 +1,8 @@
+~/.zshrc
+~/.zsh_history
+~/.ssh
+~/.config/nvim
+~/.config/zathura
+~/.config/alacritty
+~/.config/fusuma
+~/.config/logid
