@@ -5,14 +5,14 @@ function json_append {
 
 function sync_dir() {
   LS=/usr/bin/ls
-  mkdir -p $DIR/backup$1
-  for FILE in $($LS -Ab $1);
+  mkdir -p "$DIR/backup$1"
+  $LS -A "$1" | while read FILE
   do
-    FILE=$1/$FILE # absolute path
-    if [ -d $FILE ]; then
-      sync_dir $FILE
+    FILE="$1/$FILE" # absolute path
+    if [ -d "$FILE" ]; then
+      sync_dir "$FILE"
     else
-      ln -f $FILE $DIR/backup$FILE
+      ln -f "$FILE" "$DIR/backup$FILE"
     fi
   done
 }
@@ -34,7 +34,7 @@ then
   echo "Recreate backup directory?"
   read ANS
   if [[ $ANS == 'y' ]];
-  then rm -r ./$BACK_DIR
+  then rm -rf ./$BACK_DIR/*
   fi 
 fi
 
