@@ -43,3 +43,7 @@ cd .backup # make sure you are at this directory
 ### Apr 3 2021
 - Now supports adding directory to sync
 - Don't need to give user name now
+
+### Apr 11 2021
+- fix bug: can't process file with space
+- file linked won't be linked again

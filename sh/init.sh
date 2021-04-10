@@ -1,18 +1,30 @@
 #!/bin/bash
+
+## HELPERS ##
 function json_append {
   cat <<< $(jq "$1" "$2") > "$2"
 }
 
+# @Brief link with check first
+# @Var $1 src
+# @Var $2 dir
+function ln_check() {
+  [[ -f "$2" ]] || ln "$1" "$2"
+}
+
+## FUNCS ##
+# @Brief synchronize directory
+# @Var $1 directory to sync
 function sync_dir() {
   LS=/usr/bin/ls
   mkdir -p "$DIR/backup$1"
   $LS -A "$1" | while read FILE
   do
     FILE="$1/$FILE" # absolute path
-    if [ -d "$FILE" ]; then
-      sync_dir "$FILE"
+    if [[ -d "$FILE" ]]; then
+      sync_dir "$FILE" 
     else
-      ln -f "$FILE" "$DIR/backup$FILE"
+      ln_check "$FILE" "$DIR/backup$FILE"
     fi
   done
 }
@@ -59,13 +71,13 @@ mkdir -p $BACK_DIR # making backup directory
 
 for FILE in $(cat $DIR/list.txt);
 do
-  FILE=$(echo $FILE | sed "s?~?$HOME?")
-  if [ -d $FILE ]; then
+  FILE=$(echo "$FILE" | sed "s?~?$HOME?")
+  if [ -d "$FILE" ]; then
     # echo "Directory currently not supported!"
-    sync_dir $FILE
+    sync_dir "$FILE"
   elif [ -f $FILE ]; then
-    mkdir -p $DIR/$BACK_DIR$( dirname $FILE)
-    ln -f $FILE $DIR/backup$FILE
+    mkdir -p "$DIR/$BACK_DIR$(dirname $FILE)"
+    ln_check "$FILE" "$DIR/backup$FILE"
   else
     echo "Error: Path $FILE does not exist on your computer!"
     continue
