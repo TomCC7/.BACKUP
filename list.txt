@@ -6,3 +6,5 @@
 ~/.config/alacritty
 ~/.config/fusuma
 ~/.config/logid
+~/.config/emacs
+/usr/bin/gitproxy

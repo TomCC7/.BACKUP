@@ -6,7 +6,7 @@ function json_append {
 function sync_dir() {
   LS=/usr/bin/ls
   mkdir -p $DIR/backup$1
-  for FILE in $($LS $1);
+  for FILE in $($LS -Ab $1);
   do
     FILE=$1/$FILE # absolute path
     if [ -d $FILE ]; then
