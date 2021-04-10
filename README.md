@@ -47,3 +47,4 @@ cd .backup # make sure you are at this directory
 ### Apr 11 2021
 - fix bug: can't process file with space
 - file linked won't be linked again
+- symbolic linked file can be linked now

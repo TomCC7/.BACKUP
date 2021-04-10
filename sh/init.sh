@@ -9,7 +9,21 @@ function json_append {
 # @Var $1 src
 # @Var $2 dir
 function ln_check() {
-  [[ -f "$2" ]] || ln "$1" "$2"
+  # check linked file existence
+  [[ -f "$2" ]] && return
+  # check file is symbolic link
+  FILE_SRC="$1"
+  if [[ "$(readlink "$FILE_SRC")" != "" ]];
+  then
+    FILE_SRC="$(readlink "$FILE_SRC")"
+    # relative
+    if [[ "${FILE_SRC:0:1}" != "/" ]];
+    then
+      FILE_SRC="$(dirname "$1")/$FILE_SRC"
+    fi
+    echo "linking "$1" -> "$FILE_SRC""
+  fi
+  ln "$FILE_SRC" "$2"
 }
 
 ## FUNCS ##
